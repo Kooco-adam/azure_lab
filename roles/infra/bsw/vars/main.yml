@@ -1,0 +1,11 @@
+---
+resource_group: BSW
+plan_name: BSW_ServicePlan
+location: 'Central India'
+
+db_location: 'Japan East'
+sql_server_name: "bsw-prod-sqlserver-01"
+db_name: "db"
+elastic_pool_name: "Prod-BSW-elastic-pool"
+primary_sqlserver_user: adam
+primary_sqlserver_password: "1qaz@WSX3edc$RFV"

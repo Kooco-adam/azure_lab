@@ -1,0 +1,6 @@
+---
+- name: Build BSW in Azure
+  hosts: localhost
+  connection: local
+  roles:
+    - bsw
