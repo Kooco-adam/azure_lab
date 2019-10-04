@@ -47,7 +47,7 @@
     location: "{{ db_location }}"
     admin_username: "{{ primary_sqlserver_user }}"
     admin_password: "{{ primary_sqlserver_password }}"
-    name: db-prod
+    name: "{{ sql_server_name }}"
     resource_group: "{{ resource_group }}"
 
 # ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
