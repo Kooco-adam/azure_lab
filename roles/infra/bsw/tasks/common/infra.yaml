@@ -1,0 +1,70 @@
+---
+- name: Create resource group
+  azure_rm_resourcegroup:
+    name: "{{ resource_group }}"
+    location: "{{ location }}"
+
+# https://docs.microsoft.com/zh-tw/azure/ansible/ansible-create-configure-azure-web-apps
+
+- name: Create Web App
+  azure_rm_webapp:
+    resource_group: "{{ resource_group }}"
+    name: "{{ item.server_name }}"
+    plan: 
+      resource_group: "{{ resource_group }}"
+      name: "{{ plan_name }}"
+      is_linux: false
+      sku: S1
+      number_of_workers: 1
+    frameworks:
+      - name: "{{ item.frameworks_name }}"
+        version: "{{ item.version }}"
+  with_items:
+    - server_name: 'prod-server'
+      frameworks_name: 'net_framework'
+      version: '4.7'
+    - server_name: 'prod-admin'
+      frameworks_name: 'net_framework'
+      version: '4.7'
+# ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+# Issue: 
+# fatal: [localhost]: FAILED! => {"changed": false, "msg": "Unsupported framework dotnetcore for Windows web app."}
+# ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    # - server_name: 'prod-web'
+    #   frameworks_name: 'dotnetcore'
+    #   version: '2.2'
+
+- name: Create MS-SQL DB
+  azure_rm_sqlserver:
+    location: "{{ db_location }}"
+    admin_username: "{{ primary_sqlserver_user }}"
+    admin_password: "{{ primary_sqlserver_password }}"
+    name: "{{ mssql_db_name }}"
+    resource_group: "{{ resource_group }}"
+
+- name: Create database elastic pool
+  azure_rm_sqlelasticpool:
+    location: "{{ db_location }}"
+    name: "{{ elastic_pool_name }}"
+    #  profile: "{{ az_profile }}"
+    resource_group: "{{ resource_group }}"
+    server_name: "{{ mssql_db_name }}"
+    state: "present"
+    dtu: 100
+    storage_mb: 15000
+    zone_redundant: 'False'
+    edition: standard
+
+- name: Create SQL Database
+  azure_rm_sqldatabase:
+    resource_group: "{{ resource_group }}"
+    server_name: "{{ mssql_db_name }}"
+    name: "{{ database_name }}"
+    location: "{{ db_location }}"
+    elastic_pool_name: "{{ elastic_pool_name }}"
+
+# - name: Delete Resource Group
+#   azure_rm_resourcegroup:
+#       name: "{{ resource_group }}"
+#       state: absent
+#       force: yes

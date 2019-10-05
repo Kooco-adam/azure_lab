@@ -1,81 +1,18 @@
 ---
-- name: Create resource group
-  azure_rm_resourcegroup:
-    name: "{{ resource_group }}"
-    location: "{{ location }}"
+# Install Azure Python SDK required by modules.
+#- pip:
+#    requirements: "{{ role_path }}/files/requirements-azure.txt"
+#    extra_args: -I
+#  when: skip_azure_sdk is undefined
+# - debug:
+#     msg:
+#       - "Your Ansible version is lower than 2.5.0"
+#       - "You may need to perform additional steps to install this roles:"
+#       - "  sudo pip install -r {{ role_path }}/files/requirements-azure.txt"
+#       - "or"
+#       - "  pip install --user -r {{ role_path }}/files/requirements-azure.txt"
+#       - "depending on your ansible setup."
+#   when: ansible_version.full < "2.5.0"
 
-# https://docs.microsoft.com/zh-tw/azure/ansible/ansible-create-configure-azure-web-apps
+- include_tasks: "{{ role_path }}/tasks/common/infra.yaml"
 
-- name: Create Web App for .Net 4.7
-  azure_rm_webapp:
-    resource_group: "{{ resource_group }}"
-    name: "{{ item }}"
-    plan: 
-      resource_group: "{{ resource_group }}"
-      name: "{{ plan_name }}"
-      is_linux: false
-      sku: S1
-      number_of_workers: 1
-    frameworks:
-      - name: "net_framework"
-        version: "4.7"
-  with_items:
-    - prod-server
-    - prod-admin
-
-# ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-# Issue: 
-# fatal: [localhost]: FAILED! => {"changed": false, "msg": "Unsupported framework dotnetcore for Windows web app."}
-# ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-# - name: Create Web App for dotnetcore
-#   azure_rm_webapp:
-#     resource_group: "{{ resource_group }}"
-#     name: "prod-web"
-#     plan: 
-#       resource_group: "{{ resource_group }}"
-#       name: "{{ plan_name }}"
-#       is_linux: false
-#       sku: S1
-#       number_of_workers: 1
-#     frameworks:
-#       - name: "dotnetcore"
-#         version: "2.2"
-#         
-
-- name: create SQL server
-  azure_rm_sqlserver:
-    location: "{{ db_location }}"
-    admin_username: "{{ primary_sqlserver_user }}"
-    admin_password: "{{ primary_sqlserver_password }}"
-    name: "{{ sql_server_name }}"
-    resource_group: "{{ resource_group }}"
-
-# ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-# Issue:
-# ERROR! no action detected in task. This often indicates a misspelled module name
-# ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-# - name: create database elastic pool
-#   azure_rm_sqlelasticpool:
-#     location: "{{ location }}"
-#     name: "{{ elastic_pool_name }}"
-#     #  profile: "{{ az_profile }}"
-#     resource_group: "{{ resource_group }}"
-#     server_name: "{{ sql_server_name }}"
-#     dtu: 100
-#     storage_mb: 15000
-#     zone_redundant: false
-#     edition: standard
-
-- name: Create SQL Database
-  azure_rm_sqldatabase:
-    resource_group: "{{ resource_group }}"
-    server_name: "{{ sql_server_name }}"
-    name: "{{ db_name }}"
-    location: "{{ DB_location }}"
-    # elastic_pool_name: "{{ elastic_pool_name }}"
-
-# - name: Delete Resource Group
-#   azure_rm_resourcegroup:
-#       name: "{{ resource_group }}"
-#       state: absent
-#       force: yes

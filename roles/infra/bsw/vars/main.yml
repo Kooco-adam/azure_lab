@@ -4,8 +4,8 @@ plan_name: BSW_ServicePlan
 location: 'Central India'
 
 db_location: 'Japan East'
-sql_server_name: "bsw-prod-sqlserver-01"
-db_name: "db"
-elastic_pool_name: "Prod-BSW-elastic-pool"
+mssql_db_name: 'db-prod'
 primary_sqlserver_user: adam
 primary_sqlserver_password: "1qaz@WSX3edc$RFV"
+elastic_pool_name: 'Prod-BSW-elastic-pool'
+database_name: 'db'
